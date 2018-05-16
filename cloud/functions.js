@@ -550,12 +550,17 @@ Parse.Cloud.define("logIn", function(req, res) {
 
 
               user.setPassword(random);
-              user.save(null, { useMasterKey: true }).then(function() {
-
-              
-                Parse.User.logIn(user.get('username'), random).then(function (user) {
+              user.save(null, { useMasterKey: true }).then(function(nil, e) {
+                console.info('use reset password to '+random);
+                if (e) {
+                  res.error(e);
+                  return;
+                }
+                Parse.User.logIn(user.get('username'), random, {useMasterKey : true}).then(function (user) {
+                  console.info('use login with sms succeeded');
                   res.success(user.getSessionToken());
                 }, function (err) {
+                  console.info('user login with sms failed' + JSON.stringify(err));
                   res.error(err);
                 });
 
